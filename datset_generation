@@ -1,0 +1,26 @@
+myDir = uigetdir; % asks for directory from where sources images needs to be taken from
+cleanFinalDir = uigetdir; % ask for directory where clean images needs to be stored
+noisyFinalDir = uigetdir; % ask for directory where the noisy images needs to be stored
+myFiles = dir(fullfile(myDir,'*.jpg')); % gets all jpeg files in struct
+
+for k = 1:length(myFiles)
+  baseFileName = myFiles(k).name;
+  % figuring file names
+  fullFileName = fullfile(myDir, baseFileName);
+  cleanfinalFileName = fullfile(cleanFinalDir, baseFileName);
+  noisyfinalFileName = fullfile(noisyFinalDir, baseFileName);
+  % OCT Dataset synthesis
+  % noisy image generation
+  % read through the image files
+  A = imread(fullFileName);
+  % add speckle noise
+  I = rgb2gray(A); % converting to gray scale
+  F = imresize(I, [255, 255]); % resizing to 255x255
+   % save the file with same basename
+  imwrite(F, cleanfinalFileName) % write the clean image
+  J = imnoise(F,'speckle',k/length(myFiles)); % adding noise
+  fprintf(1, 'Generating noisy image with variance : %f\n', k/length(myFiles))
+  % save the file with same basename
+  imwrite(J, noisyfinalFileName); % write the noise image
+  fprintf(1, 'Now reading %s\n', fullFileName);
+end
